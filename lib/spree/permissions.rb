@@ -59,6 +59,13 @@ module Spree
       current_ability.can :manage, Spree::Config
     end
 
+    define_method('can-update-vendor/orders') do |current_ability, user|
+      current_ability.can [:read, :edit, :update], Spree::Order, [] do |order|
+        vendor_ids = order.line_items.map { |line_item| line_item.product.vendor_id }.uniq
+        vendor_ids.include?(user&.get_vendor&.id)
+      end
+    end
+
     define_method('can-admin-spree/config') do |current_ability, user|
       current_ability.can :admin, Spree::Config
     end
